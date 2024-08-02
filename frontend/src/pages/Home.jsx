@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import WourkoutDetailes from "../components/WourkoutDetailes";
 import WorkoutForm from "../components/WorkoutForm";
+import { useAuthContext } from '../../hooks/useAuthContext'
+
 
 const Home = () => {
+  const {user} = useAuthContext()
   const [workouts, setWorkouts] = useState(null);
   useEffect(() => {
     const fetchAPI = async () => {
-      const response = await fetch("http://localhost:8080/api/workouts/");
+      const response = await fetch("http://localhost:8080/api/workouts/",{
+        headers:{
+        'authentication':`Bearer ${user.token}`
+      }});
+      console.log(response)
       const json = await response.json();
       if (response.ok) {
         setWorkouts(json);
       }
-      console.log(workouts);
     };
     fetchAPI();
   }, []);

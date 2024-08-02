@@ -6,8 +6,11 @@ import {
   deleteWorkout,
   updateWorkout,
 } from "../controllers/workoutControllers.js";
+import { authentication } from "../middleWares/authentication.js";
 
 const router = express.Router();
+
+router.use(authentication)
 
 router.get("/", getWorkoutes);
 

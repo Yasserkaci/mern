@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 // get all workoutes
 
 const getWorkoutes = async (req, res) => {
-  const workouts = await Workout.find({}).sort({ createdAt: -1 });
+  const userId = req.user._id
+  console.log(userId)
+  const workouts = await Workout.find({userId}).sort({ createdAt: -1 });
   res.status(200).json(workouts);
 };
 
@@ -28,13 +30,28 @@ const getWorkout = async (req, res) => {
 //make a workout
 const creatWorkout = async (req, res) => {
   const { title, reps, load } = req.body;
+  const userId = req.user._id
+  console.log(userId)
+ 
+  const emptyFeilds = []
+  if(!title){
+    emptyFeilds.push("title")
+  }
+  if(!reps){
+    emptyFeilds.push("reps")
+  }
+  if(!load){
+    emptyFeilds.push("load")
+  }
+  if(emptyFeilds.length > 0){
+    res.status(400).json({error:"please fill all inputes", emptyFeilds})
+  }
   try {
-    const workout = await Workout.create({ title, reps, load });
+    const workout = await Workout.create({ title, reps, load, userId });
     res.status(200).json(workout);
   } catch (error) {
-    res.status(401).json({ mssg: error });
-  }
-};
+    res.status(401).json({ error:error.message });
+  }};
 
 //delete a workout
 
@@ -72,6 +89,7 @@ const updateWorkout = async (req, res) => {
   res.status(200).json(workout);
 };
 
+ 
 //exporting
 
 export { creatWorkout, getWorkoutes, getWorkout, deleteWorkout, updateWorkout };
